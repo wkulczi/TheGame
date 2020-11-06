@@ -73,61 +73,91 @@ class _GameScreenStateState extends State<GameScreenState> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-              flex: 12,
-              child: Container(
-                child: GridView.builder(
-                    //don't ask me why
-                    itemCount: maxCols * maxRows,
-                    physics: NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: maxCols),
-                    itemBuilder: (context, index) {
-                      return this.conditionallyColoredRectangle(
-                          snake
-                              .getSnakePos()
-                              .map((e) => coordinateSpace.deconvert(coord: e))
-                              .toList()
-                              .contains(index),
-                          index);
-                    }),
-              )),
-          Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  child: Text(
-                    "Score: " + getScore().toString(),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                InkWell(
-                  child: Container(
+      body: GestureDetector(
+        onHorizontalDragUpdate: (details) {
+          if (snake.getDirection() == Direction.south ||
+              snake.getDirection() == Direction.north) {
+            if (details.delta.dx > 0) {
+              setState(() {
+                snake.changeDirection(newDirection: Direction.east);
+              });
+            } else {
+              setState(() {
+                snake.changeDirection(newDirection: Direction.west);
+              });
+            }
+          }
+        },
+        onVerticalDragUpdate: (details) {
+          if (snake.getDirection() == Direction.west ||
+              snake.getDirection() == Direction.east) {
+            if (details.delta.dy > 0) {
+              setState(() {
+                snake.changeDirection(newDirection: Direction.south);
+              });
+            } else {
+              setState(() {
+                snake.changeDirection(newDirection: Direction.north);
+              });
+            }
+          }
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+                flex: 12,
+                child: Container(
+                  child: GridView.builder(
+                      //don't ask me why
+                      itemCount: maxCols * maxRows,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: maxCols),
+                      itemBuilder: (context, index) {
+                        return this.conditionallyColoredRectangle(
+                            snake
+                                .getSnakePos()
+                                .map((e) => coordinateSpace.deconvert(coord: e))
+                                .toList()
+                                .contains(index),
+                            index);
+                      }),
+                )),
+            Expanded(
+              flex: 1,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
                     child: Text(
-                      "Clear dots",
+                      "Score: " + getScore().toString(),
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  onTap: () => {this.gameLoop()},
-                ),
-                InkWell(
-                  child: Container(
-                    child: Text(
-                      this.isPlaying ? "Exit" : "Play",
-                      style: TextStyle(color: Colors.white),
+                  InkWell(
+                    child: Container(
+                      child: Text(
+                        "Clear dots",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
+                    onTap: () => {this.gameLoop()},
                   ),
-                  onTap: () => ({this.gameLoop(), setState(() => score++)}),
-                ),
-              ],
-            ),
-          )
-        ],
+                  InkWell(
+                    child: Container(
+                      child: Text(
+                        this.isPlaying ? "Exit" : "Play",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    onTap: () => ({this.gameLoop(), setState(() => score++)}),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

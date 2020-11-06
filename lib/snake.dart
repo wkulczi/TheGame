@@ -14,6 +14,10 @@ class Snake extends Equatable {
     this.snakeDirection = Direction.north;
   }
 
+  getDirection(){
+    return snakeDirection;
+  }
+  
   updateSnakePos({@required List<Coord> snakeLocation}) {
     this.snakeCoords = snakeLocation;
   }
@@ -22,7 +26,7 @@ class Snake extends Equatable {
     this.updateSnakePos(snakeLocation: this._calculateNewSnakePos(this.snakeCoords));
   }
 
-  changeSnakeDirection({@required Direction newDirection}) {
+  changeDirection({@required Direction newDirection}) {
     this.snakeDirection = newDirection;
   }
 
