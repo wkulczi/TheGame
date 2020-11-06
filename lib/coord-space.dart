@@ -5,7 +5,8 @@ class CoordinateSpace {
   int _maxCols = 0;
   int _maxRows = 0;
 
-  CoordinateSpace({@required int elementsInRow, @required int elementsInColumn}) {
+  CoordinateSpace(
+      {@required int elementsInRow, @required int elementsInColumn}) {
     this._maxCols = elementsInRow;
     this._maxRows = elementsInColumn;
   }
@@ -23,11 +24,11 @@ class CoordinateSpace {
     return coord.getX() + coord.getY() * _maxCols;
   }
 
-  int getMaxRows(){
+  int getMaxRows() {
     return _maxRows;
   }
 
-  int getMaxCols(){
+  int getMaxCols() {
     return _maxCols;
   }
 }
@@ -35,10 +36,14 @@ class CoordinateSpace {
 class Coord extends Equatable {
   int _x = 0;
   int _y = 0;
+  int maxX = 0;
+  int maxY = 0;
 
-  Coord({@required x, @required y}) {
+  Coord({@required x, @required y, maxX = 20, maxY = 34}) {
     this._x = x;
     this._y = y;
+    this.maxX = maxX;
+    this.maxY = maxY;
   }
 
   bool checkCollision(Coord co2) {
@@ -55,33 +60,44 @@ class Coord extends Equatable {
 
   @override
   String toString() {
-    return "{x: " + this._x.toString() + ", y: " + this._y.toString()+"}";
+    return "{x: " + this._x.toString() + ", y: " + this._y.toString() + "}";
   }
 
   @override
   List<Object> get props => [this._x, this._y];
 
+  Coord operator +(Coord b) {
+    return Coord(
+        x: (this._x + b.getX() + this.maxX) % this.maxX,
+        y: (this._y + b.getY() + this.maxY) % this.maxY);
+  }
+
+  Coord operator -(Coord b) {
+    return Coord(
+        y: (this._y - b.getY() + this.maxX) % this.maxY,
+        x: (this._x - b.getX() + this.maxX) % this.maxX);
+  }
+
   ///feed me list of active Dots, max number of rows and rows from CoordinateSpace instance
-  int countNeighboursWithWrap(List<Coord> activeDots, int maxX, int maxY){
+  int countNeighboursWithWrap(List<Coord> activeDots, int maxX, int maxY) {
     int aliveNeighbours = 0;
 
     List<Coord> neighbours = [
-      Coord(x: (_x-1+maxX)%maxX, y: (_y+1+maxY)%maxY),
-      Coord(x: (_x+1+maxX)%maxX, y: (_y+1+maxY)%maxY),
-      Coord(x: (_x-1+maxX)%maxX, y: _y),
-      Coord(x: (_x+1+maxX)%maxX, y:_y),
-      Coord(x: (_x-1+maxX)%maxX, y: (_y-1+maxY)%maxY),
-      Coord(x: (_x+1+maxX)%maxX, y: (_y-1+maxY)%maxY),
-      Coord(x: _x,y:_y-1),
-      Coord(x: _x,y:_y+1),
+      Coord(x: (_x - 1 + maxX) % maxX, y: (_y + 1 + maxY) % maxY),
+      Coord(x: (_x + 1 + maxX) % maxX, y: (_y + 1 + maxY) % maxY),
+      Coord(x: (_x - 1 + maxX) % maxX, y: _y),
+      Coord(x: (_x + 1 + maxX) % maxX, y: _y),
+      Coord(x: (_x - 1 + maxX) % maxX, y: (_y - 1 + maxY) % maxY),
+      Coord(x: (_x + 1 + maxX) % maxX, y: (_y - 1 + maxY) % maxY),
+      Coord(x: _x, y: _y - 1),
+      Coord(x: _x, y: _y + 1),
     ];
 
     print(activeDots);
     print(neighbours);
 
     activeDots.forEach((element) {
-      if (neighbours.contains(element))
-        aliveNeighbours++;
+      if (neighbours.contains(element)) aliveNeighbours++;
     });
 
     return aliveNeighbours;

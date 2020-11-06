@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/coord-space.dart';
+import 'package:flutter_app/snake.dart';
 
 void main() {
   runApp(MaterialApp(home: GameScreen(), routes: <String, WidgetBuilder>{
@@ -48,23 +49,24 @@ class _GameScreenStateState extends State<GameScreenState> {
   static int maxRows = 34;
 
   //coordinate space scales, to freely convert from int to Coord and back
-  static CoordinateSpace coordinateSpace = new CoordinateSpace(elementsInRow: maxCols, elementsInColumn: maxRows);
+  static CoordinateSpace coordinateSpace =
+      new CoordinateSpace(elementsInRow: maxCols, elementsInColumn: maxRows);
 
-  var activeDots = [222, 224, 226, 228, 230, 233, 235, 237];
-  
+  //a snake object to move around the guy
+  var snake = Snake(snakeLocation: [488, 489, 469, 449, 429]
+      .map((e) => coordinateSpace.convert(pos: e))
+      .toList());
+
   void gameLoop() {
-    print(this.activeDots);
-    var activeDotsAsCoords = [];
-    this.activeDots.forEach((element) {activeDotsAsCoords.add(coordinateSpace.convert(pos: element));});
-    print(activeDotsAsCoords);
-    // Timer.periodic(Duration(milliseconds: 700), (timer) {
-       // update stuff
-      // this.updateScreen();
-    // });
+    Timer.periodic(Duration(milliseconds: 400), (timer) {
+    this.updateScreen();
+    });
   }
 
   void updateScreen() {
-    //  rules go here
+    setState(() {
+      this.snake.moveSnake();
+    });
   }
 
   @override
@@ -79,13 +81,18 @@ class _GameScreenStateState extends State<GameScreenState> {
               child: Container(
                 child: GridView.builder(
                     //don't ask me why
-                    itemCount: maxCols*maxRows,
+                    itemCount: maxCols * maxRows,
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: maxCols),
                     itemBuilder: (context, index) {
-                      return this.ConditionallyColoredRectangle(
-                          activeDots.contains(index), index);
+                      return this.conditionallyColoredRectangle(
+                          snake
+                              .getSnakePos()
+                              .map((e) => coordinateSpace.deconvert(coord: e))
+                              .toList()
+                              .contains(index),
+                          index);
                     }),
               )),
           Expanded(
@@ -106,7 +113,7 @@ class _GameScreenStateState extends State<GameScreenState> {
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  onTap: () => ({setState(() => this.activeDots.clear())}),
+                  onTap: () => {this.gameLoop()},
                 ),
                 InkWell(
                   child: Container(
@@ -129,19 +136,14 @@ class _GameScreenStateState extends State<GameScreenState> {
     return this.score;
   }
 
-  Widget ConditionallyColoredRectangle(bool predicate, int index) {
+  Widget conditionallyColoredRectangle(bool predicate, int index) {
     if (predicate) {
       return Container(
         padding: EdgeInsets.all(2),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(3),
-          child: InkWell(
-            onTap: () => ({
-              setState(() => this.activeDots.remove(index)),
-            }),
-            child: Container(
-              color: Colors.white,
-            ),
+          child: Container(
+            color: Colors.white,
           ),
         ),
       );
@@ -150,13 +152,8 @@ class _GameScreenStateState extends State<GameScreenState> {
         padding: EdgeInsets.all(2),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(3),
-          child: InkWell(
-            onTap: () => ({
-              setState(() => this.activeDots.add(index)),
-            }),
-            child: Container(
-              color: Colors.grey[900],
-            ),
+          child: Container(
+            color: Colors.grey[900],
           ),
         ),
       );
