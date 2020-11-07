@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_app/golDot.dart';
 
 class CoordinateSpace {
   int _maxCols = 0;
@@ -30,6 +31,14 @@ class CoordinateSpace {
 
   int getMaxCols() {
     return _maxCols;
+  }
+
+  //subtract listA from all coords possible
+  List<Coord> outerJoin(List<Coord> listA){
+    List<int> allDots = new List<int>.generate((this._maxRows*this._maxCols), (i) => i+1);
+    List<int> aListDotsAsInt = listA.map((e) => this.deconvert(coord: e)).toList();
+    allDots.removeWhere((element) => aListDotsAsInt.contains(element));
+    return allDots.map((e) => this.convert(pos: e)).toList();
   }
 }
 
@@ -78,28 +87,4 @@ class Coord extends Equatable {
         x: (this._x - b.getX() + this.maxX) % this.maxX, maxX: this.maxX, maxY: this.maxY);
   }
 
-  ///feed me list of active Dots, max number of rows and rows from CoordinateSpace instance
-  int countNeighboursWithWrap(List<Coord> activeDots) {
-    int aliveNeighbours = 0;
-
-    List<Coord> neighbours = [
-      Coord(maxX: this.maxX, maxY: this.maxY, x: (_x - 1 + this.maxX) %this.maxX, y: (_y + 1 + this.maxY) % this.maxY),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: (_x + 1 + this.maxX) %this.maxX, y: (_y + 1 + this.maxY) % this.maxY),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: (_x - 1 + this.maxX) %this.maxX, y: _y),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: (_x + 1 + this.maxX) %this.maxX, y: _y),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: (_x - 1 + this.maxX) %this.maxX, y: (_y - 1 + this.maxY) % this.maxY),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: (_x + 1 + this.maxX) %this.maxX, y: (_y - 1 + this.maxY) % this.maxY),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: _x, y: _y - 1),
-      Coord(maxX: this.maxX, maxY: this.maxY, x: _x, y: _y + 1),
-    ];
-
-    print(activeDots);
-    print(neighbours);
-
-    activeDots.forEach((element) {
-      if (neighbours.contains(element)) aliveNeighbours++;
-    });
-
-    return aliveNeighbours;
-  }
 }

@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:equatable/equatable.dart';
+
 import 'coord-space.dart';
 
-abstract class Point {
+abstract class Point extends Equatable {
 
   Color getColor();
 

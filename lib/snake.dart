@@ -157,4 +157,8 @@ class Snake extends Point {
   List<Coord> activePoints() {
     return this.getSnakePosCopy();
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [this.isAlive, this.maxRows, this.maxCols, this.snakeCoords, this.snakeDirection, this.snakeColor];
 }

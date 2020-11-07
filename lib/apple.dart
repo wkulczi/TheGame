@@ -54,4 +54,8 @@ class Apple extends Point {
   List<Coord> activePoints() {
     return [this.location];
   }
+
+  @override
+  // TODO: implement props
+  List<Object> get props => [this.location, this.appleColor];
 }

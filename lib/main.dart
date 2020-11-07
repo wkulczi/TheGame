@@ -49,13 +49,13 @@ class GameScreenState extends StatefulWidget {
 class _GameScreenStateState extends State<GameScreenState> {
   int score = 0;
   bool isPlaying = false;
-  static int baseSpeed = 320;
+  static int baseSpeed = 300;
   static int maxCols = 20;
   static int maxRows = 30;
 
   //coordinate space scales, to freely convert from int to Coord and back
   static CoordinateSpace coordinateSpace =
-      new CoordinateSpace(elementsInRow: maxCols, elementsInColumn: maxRows);
+  new CoordinateSpace(elementsInRow: maxCols, elementsInColumn: maxRows);
 
   var apple = Apple(maxCols: maxCols, maxRows: maxRows);
 
@@ -64,6 +64,7 @@ class _GameScreenStateState extends State<GameScreenState> {
 
   List<Point> activePoints = [];
 
+
   @override
   void initState() {
     activePoints.add(snake);
@@ -71,28 +72,23 @@ class _GameScreenStateState extends State<GameScreenState> {
     super.initState();
   }
 
-  void startGameLoop(duration) {
-    Timer.periodic(Duration(milliseconds: duration), (timer) {
+  void startGameLoop() {
+    Timer.periodic(Duration(milliseconds: baseSpeed), (timer) {
       this.updateScreen(timer);
     });
   }
 
   void updateScreen(Timer timer) {
     setState(() {
-      if (snake.alive() && this.isPlaying) {
-        var actualPos = [apple, snake]
-            //get active points from apple and snake (lists)
-            .map((e) => e.activePoints())
-            //flatten lists
-            .expand((element) => element)
-            //to list :V
-            .toList();
-        this.snake.updateSnake(actualPos);
-        this.apple.updateApple(coordinateSpace, snake.activePoints());
-        timer.cancel();
-        startGameLoop(baseSpeed - (8 * getScore()));
+      if (this.isPlaying) {
+        if (snake.alive()) {
+          snakeGameRoutine(timer);
+        } else {
+          this.isPlaying = false;
+          timer.cancel();
+          //  popup
+        }
       } else {
-        this.isPlaying = false;
         timer.cancel();
       }
     });
@@ -138,7 +134,7 @@ class _GameScreenStateState extends State<GameScreenState> {
                 flex: 12,
                 child: Container(
                   child: GridView.builder(
-                      //don't ask me why
+                    //don't ask me why
                       itemCount: maxCols * maxRows,
                       physics: NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -166,7 +162,8 @@ class _GameScreenStateState extends State<GameScreenState> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    onTap: () => ({
+                    onTap: () =>
+                    ({
                       if (this.isPlaying)
                         {
                           setState(() {
@@ -179,7 +176,7 @@ class _GameScreenStateState extends State<GameScreenState> {
                           setState(() {
                             snake.reset();
                             this.isPlaying = true;
-                            startGameLoop(baseSpeed);
+                            startGameLoop();
                           })
                         }
                     }),
@@ -225,7 +222,7 @@ class _GameScreenStateState extends State<GameScreenState> {
     if (isPointActive(index)) {
       return activePoints
           .where((element) =>
-              element.isActive(coordinateSpace.convert(pos: index)))
+          element.isActive(coordinateSpace.convert(pos: index)))
           .first
           .getColor();
     } else {
@@ -237,4 +234,52 @@ class _GameScreenStateState extends State<GameScreenState> {
     return activePoints
         .any((point) => point.isActive(coordinateSpace.convert(pos: index)));
   }
+
+  void snakeGameRoutine(timer) {
+    var actualPos = [apple, snake]
+    //get active points from apple and snake (lists)
+        .map((e) => e.activePoints())
+    //flatten lists
+        .expand((element) => element)
+    //to list :V
+        .toList();
+    this.snake.updateSnake(actualPos);
+    this.apple.updateApple(coordinateSpace, snake.activePoints());
+  }
+
+// void golSettingUp() {
+//   var alivedots = [apple, snake]
+//       //get active points from apple and snake (lists)
+//       .map((e) => e.activePoints())
+//       //flatten lists
+//       .expand((element) => element)
+//       //to list :V
+//       .toList();
+//
+//   var aliveDotsNoDuplicates = alivedots.toSet().toList();
+//
+//   List<GolDot> aliveDots = aliveDotsNoDuplicates
+//       .map((e) => GolDot(location: e, alive: true))
+//       .toList();
+//   List<GolDot> allDots = coordinateSpace
+//       .outerJoin(aliveDotsNoDuplicates)
+//       .map((e) => GolDot(location: e, alive: false))
+//       .toList();
+//   allDots.addAll(aliveDots);
+//
+//   this.gol.setDots(allDots);
+// }
+//
+// void gameOfLifeRoutine(Timer timer) {
+//   if (this.gameOverScreenOn) {
+//     this.gol.update();
+//     setState(() {
+//       this.activePoints = this.gol.getDotsCopy().map((e) => e.dot);
+//     });
+//   } else {
+//     print('aloha');
+//     timer.cancel();
+//     this.startGameLoop();
+//   }
+// }
 }
