@@ -2,7 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/coord-space.dart';
+import 'package:flutter_app/point.dart';
 import 'package:flutter_app/snake.dart';
+
+import 'apple.dart';
+import 'direction.dart';
 
 void main() {
   runApp(MaterialApp(home: GameScreen(), routes: <String, WidgetBuilder>{
@@ -44,28 +48,53 @@ class GameScreenState extends StatefulWidget {
 
 class _GameScreenStateState extends State<GameScreenState> {
   int score = 0;
-  bool isPlaying = true;
+  bool isPlaying = false;
+  static int baseSpeed = 320;
   static int maxCols = 20;
-  static int maxRows = 34;
+  static int maxRows = 30;
 
   //coordinate space scales, to freely convert from int to Coord and back
   static CoordinateSpace coordinateSpace =
       new CoordinateSpace(elementsInRow: maxCols, elementsInColumn: maxRows);
 
-  //a snake object to move around the guy
-  var snake = Snake(snakeLocation: [488, 489, 469, 449, 429]
-      .map((e) => coordinateSpace.convert(pos: e))
-      .toList());
+  var apple = Apple(maxCols: maxCols, maxRows: maxRows);
 
-  void gameLoop() {
-    Timer.periodic(Duration(milliseconds: 400), (timer) {
-    this.updateScreen();
+  //a snake object to move around the guy
+  var snake = Snake(maxCols: maxCols, maxRows: maxRows);
+
+  List<Point> activePoints = [];
+
+  @override
+  void initState() {
+    activePoints.add(snake);
+    activePoints.add(apple);
+    super.initState();
+  }
+
+  void startGameLoop(duration) {
+    Timer.periodic(Duration(milliseconds: duration), (timer) {
+      this.updateScreen(timer);
     });
   }
 
-  void updateScreen() {
+  void updateScreen(Timer timer) {
     setState(() {
-      this.snake.moveSnake();
+      if (snake.alive() && this.isPlaying) {
+        var actualPos = [apple, snake]
+            //get active points from apple and snake (lists)
+            .map((e) => e.activePoints())
+            //flatten lists
+            .expand((element) => element)
+            //to list :V
+            .toList();
+        this.snake.updateSnake(actualPos);
+        this.apple.updateApple(coordinateSpace, snake.activePoints());
+        timer.cancel();
+        startGameLoop(baseSpeed - (8 * getScore()));
+      } else {
+        this.isPlaying = false;
+        timer.cancel();
+      }
     });
   }
 
@@ -116,12 +145,7 @@ class _GameScreenStateState extends State<GameScreenState> {
                           crossAxisCount: maxCols),
                       itemBuilder: (context, index) {
                         return this.conditionallyColoredRectangle(
-                            snake
-                                .getSnakePos()
-                                .map((e) => coordinateSpace.deconvert(coord: e))
-                                .toList()
-                                .contains(index),
-                            index);
+                            isPointActive(index), getPointColor(index), index);
                       }),
                 )),
             Expanded(
@@ -138,20 +162,27 @@ class _GameScreenStateState extends State<GameScreenState> {
                   InkWell(
                     child: Container(
                       child: Text(
-                        "Clear dots",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    onTap: () => {this.gameLoop()},
-                  ),
-                  InkWell(
-                    child: Container(
-                      child: Text(
                         this.isPlaying ? "Exit" : "Play",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    onTap: () => ({this.gameLoop(), setState(() => score++)}),
+                    onTap: () => ({
+                      if (this.isPlaying)
+                        {
+                          setState(() {
+                            this.isPlaying = false;
+                            snake.reset();
+                          }),
+                        }
+                      else
+                        {
+                          setState(() {
+                            snake.reset();
+                            this.isPlaying = true;
+                            startGameLoop(baseSpeed);
+                          })
+                        }
+                    }),
                   ),
                 ],
               ),
@@ -163,17 +194,17 @@ class _GameScreenStateState extends State<GameScreenState> {
   }
 
   int getScore() {
-    return this.score;
+    return this.snake.getScore();
   }
 
-  Widget conditionallyColoredRectangle(bool predicate, int index) {
+  Widget conditionallyColoredRectangle(bool predicate, Color color, int index) {
     if (predicate) {
       return Container(
         padding: EdgeInsets.all(2),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(3),
           child: Container(
-            color: Colors.white,
+            color: color,
           ),
         ),
       );
@@ -183,10 +214,27 @@ class _GameScreenStateState extends State<GameScreenState> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(3),
           child: Container(
-            color: Colors.grey[900],
+            color: color,
           ),
         ),
       );
     }
+  }
+
+  Color getPointColor(int index) {
+    if (isPointActive(index)) {
+      return activePoints
+          .where((element) =>
+              element.isActive(coordinateSpace.convert(pos: index)))
+          .first
+          .getColor();
+    } else {
+      return Colors.grey[900];
+    }
+  }
+
+  bool isPointActive(int index) {
+    return activePoints
+        .any((point) => point.isActive(coordinateSpace.convert(pos: index)));
   }
 }

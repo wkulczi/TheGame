@@ -1,37 +1,102 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_app/point.dart';
 import 'coord-space.dart';
 import 'direction.dart';
 
-class Snake extends Equatable {
+class Snake extends Point {
   List<Coord> snakeCoords;
   Direction snakeDirection;
+  Color snakeColor;
+  bool isAlive;
+  int maxCols;
+  int maxRows;
 
-  Snake({@required List<Coord> snakeLocation}) {
-    this.snakeCoords = snakeLocation;
+  Snake({Color snakeColor = Colors.white, @required maxCols, @required int maxRows}) {
+    this.maxCols = maxCols;
+    this.maxRows = maxRows;
+    this.snakeCoords = [
+      Coord(x: 8, y: 24, maxX: this.maxCols, maxY: this.maxRows),
+      Coord(x: 9, y: 24, maxX: this.maxCols, maxY: this.maxRows),
+      Coord(x: 9, y: 23, maxX: this.maxCols, maxY: this.maxRows),
+      Coord(x: 9, y: 22, maxX: this.maxCols, maxY: this.maxRows)
+    ];
+    this.snakeDirection = Direction.north;
+    this.snakeColor = snakeColor;
+    this.isAlive = true;
+  }
+
+  getDirection() {
+    return snakeDirection;
+  }
+
+  int getScore(){
+    return this.snakeCoords.length - 4;
+  }
+
+  void reset() {
+    this.isAlive = true;
+    this.snakeCoords = [
+      Coord(x: 8, y: 24, maxX: this.maxCols, maxY: this.maxRows),
+      Coord(x: 9, y: 24, maxX: this.maxCols, maxY: this.maxRows),
+      Coord(x: 9, y: 23, maxX: this.maxCols, maxY: this.maxRows),
+      Coord(x: 9, y: 22, maxX: this.maxCols, maxY: this.maxRows)
+    ];
     this.snakeDirection = Direction.north;
   }
 
-  getDirection(){
-    return snakeDirection;
-  }
-  
   updateSnakePos({@required List<Coord> snakeLocation}) {
     this.snakeCoords = snakeLocation;
   }
 
-  moveSnake(){
-    this.updateSnakePos(snakeLocation: this._calculateNewSnakePos(this.snakeCoords));
+  updateSnake(List<Coord> activePoints) {
+    if (!isHurtingItself()) {
+      if (willBeEating(activePoints)) {
+        eatApple();
+      } else {
+        moveSnake();
+      }
+    } else {
+      this.isAlive = false;
+    }
+  }
+
+  bool alive() {
+    return this.isAlive;
+  }
+
+  void eatApple() {
+    //move tail to new position
+    var newSnakePos = this._calculateNewSnakePos(this.getSnakePosCopy());
+
+    //add the tail back to snake
+    newSnakePos.insert(0, this.getSnakePosCopy().first);
+
+    this.updateSnakePos(snakeLocation: newSnakePos);
+  }
+
+  bool willBeEating(List<Coord> activePoints) {
+    //activepoints - snakepoints = apple position
+    activePoints.removeWhere((element) => getSnakePosCopy().contains(element));
+    var futureSnakePos = _calculateNewSnakePos(getSnakePosCopy());
+    if (activePoints.isNotEmpty) {
+      return futureSnakePos.contains(activePoints.first);
+    } else {
+      return false;
+    }
+  }
+
+  moveSnake() {
+    this.updateSnakePos(
+        snakeLocation: this._calculateNewSnakePos(this.getSnakePosCopy()));
   }
 
   changeDirection({@required Direction newDirection}) {
     this.snakeDirection = newDirection;
   }
 
-  getSnakePos() {
-    return this.snakeCoords;
+  List<Coord> getSnakePosCopy() {
+    return new List<Coord>.from(this.snakeCoords);
   }
 
   List<Coord> _calculateNewSnakePos(List<Coord> snakeLocation) {
@@ -40,25 +105,25 @@ class Snake extends Equatable {
     switch (this.snakeDirection) {
       case Direction.north:
         {
-          newHead += Coord(x: 0, y: -1);
+          newHead += Coord(x: 0, y: -1, maxX: this.maxCols, maxY: this.maxRows);
         }
         break;
 
       case Direction.east:
         {
-          newHead += Coord(x: 1, y: 0);
+          newHead += Coord(x: 1, y: 0, maxX: this.maxCols, maxY: this.maxRows);
         }
         break;
 
       case Direction.south:
         {
-          newHead += Coord(x: 0, y: 1);
+          newHead += Coord(x: 0, y: 1, maxX: this.maxCols, maxY: this.maxRows);
         }
         break;
 
       case Direction.west:
         {
-          newHead += Coord(x: -1, y: 0);
+          newHead += Coord(x: -1, y: 0, maxX: this.maxCols, maxY: this.maxRows);
         }
         break;
     }
@@ -67,15 +132,29 @@ class Snake extends Equatable {
   }
 
   //not sure but should work
-  bool isColliding() {
-    this.snakeCoords.forEach((element) {
-      var foundElements = this.snakeCoords.where((elem) => elem == element);
+  bool isHurtingItself() {
+    for (var value in this.getSnakePosCopy()) {
+      var foundElements =
+          this.getSnakePosCopy().where((element) => element == value).toList();
       if (foundElements.length > 1) {
         return true;
       }
-    });
+    }
+    return false;
   }
 
   @override
-  List<Object> get props => [this.snakeCoords];
+  Color getColor() {
+    return this.snakeColor;
+  }
+
+  @override
+  bool isActive(Coord location) {
+    return this.getSnakePosCopy().contains(location);
+  }
+
+  @override
+  List<Coord> activePoints() {
+    return this.getSnakePosCopy();
+  }
 }
