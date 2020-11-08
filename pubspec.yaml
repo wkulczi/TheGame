@@ -23,3 +23,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: UbuntuMono
+      fonts:
+        - asset: assets/fonts/UbuntuMono-Regular.ttf
+        - asset: assets/fonts/UbuntuMono-Italic.ttf
+          style: italic
+        - asset: assets/fonts/UbuntuMono-Bold.ttf
+          weight: 700
