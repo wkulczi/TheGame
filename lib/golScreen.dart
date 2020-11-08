@@ -8,11 +8,19 @@ import 'package:flutter_app/gameOfLife.dart';
 import 'golDot.dart';
 
 class GolScreen extends StatefulWidget {
+  static const routeName = '/golScreen';
+
+  final int speed;
+
+  const GolScreen({Key key, this.speed}) : super(key: key);
+
   @override
-  _GolScreenState createState() => _GolScreenState();
+  _GolScreenState createState() => _GolScreenState(speed);
 }
 
 class _GolScreenState extends State<GolScreen> {
+
+  int golStepSpeed;
   static int maxCols = 20;
   static int baseSpeed = 300;
   static int maxRows = 30;
@@ -21,16 +29,33 @@ class _GolScreenState extends State<GolScreen> {
       new CoordinateSpace(elementsInRow: maxCols, elementsInColumn: maxRows);
   GameOfLife gol = GameOfLife();
 
+  _GolScreenState(int speed){
+    this.golStepSpeed=speed;
+  }
+
+  Timer globalTimer;
+
   @override
   void initState() {
+    baseSpeed = baseSpeed - (10*golStepSpeed);
     gol.setDots(this.fillWithEmtpy(coordinateSpace));
     super.initState();
   }
 
   void gameLoopStart() {
     Timer.periodic(Duration(milliseconds: baseSpeed), (timer) {
+      globalTimer = timer;
       this.updateScreen(timer);
     });
+  }
+
+
+  @override
+  void dispose() {
+    if(globalTimer != null){
+      globalTimer.cancel();
+    }
+    super.dispose();
   }
 
   void updateScreen(Timer timer) {

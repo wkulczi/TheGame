@@ -11,10 +11,14 @@ import 'direction.dart';
 import 'point.dart';
 
 class SnakeScreen extends StatefulWidget {
-  SnakeScreen({Key key}) : super(key: key);
+  static const routeName = '/snakeScreen';
+
+  final int speed;
+
+  const SnakeScreen({Key key, this.speed}) : super(key: key);
 
   @override
-  _SnakeScreenState createState() => _SnakeScreenState();
+  _SnakeScreenState createState() => _SnakeScreenState(speed);
 }
 
 class _SnakeScreenState extends State<SnakeScreen> {
@@ -23,6 +27,7 @@ class _SnakeScreenState extends State<SnakeScreen> {
   static int baseSpeed = 300;
   static int maxCols = 20;
   static int maxRows = 30;
+  int snakeSpeedMultiplier;
 
   //coordinate space scales, to freely convert from int to Coord and back
   static CoordinateSpace coordinateSpace =
@@ -35,17 +40,33 @@ class _SnakeScreenState extends State<SnakeScreen> {
 
   List<Point> activePoints = [];
 
+  _SnakeScreenState(int speed) {
+    this.snakeSpeedMultiplier = speed;
+  }
+
   @override
   void initState() {
     activePoints.add(snake);
     activePoints.add(apple);
+    baseSpeed = baseSpeed - (10 * snakeSpeedMultiplier);
     super.initState();
   }
 
+  Timer globalTimer;
+
   void startGameLoop() {
     Timer.periodic(Duration(milliseconds: baseSpeed), (timer) {
+      globalTimer = timer;
       this.updateScreen(timer);
     });
+  }
+
+  @override
+  void dispose() {
+    if (globalTimer != null) {
+      globalTimer.cancel();
+    }
+    super.dispose();
   }
 
   void updateScreen(Timer timer) {
