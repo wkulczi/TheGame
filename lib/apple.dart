@@ -1,8 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/point.dart';
-import 'dart:math';
-import 'coord-space.dart';
+
+import 'coordSpace.dart';
 
 class Apple extends Point {
   Coord location;

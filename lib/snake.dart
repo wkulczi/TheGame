@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/point.dart';
-import 'coord-space.dart';
+
+import 'coordSpace.dart';
 import 'direction.dart';
 
 class Snake extends Point {

@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_app/golDot.dart';
+import 'package:flutter/cupertino.dart';
 
 class CoordinateSpace {
   int _maxCols = 0;
