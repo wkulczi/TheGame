@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "360851693283",
+    "firebase_url": "https://gameofsnake-6c2d2.firebaseio.com",
+    "project_id": "gameofsnake-6c2d2",
+    "storage_bucket": "gameofsnake-6c2d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360851693283:android:1a65f4ebb2668ea169efd6",
+        "android_client_info": {
+          "package_name": "com.example.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "360851693283-5151o55pa8vnebq14cvslan87ekadiof.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgo1-cXEuKrM796O8qMXsKhMhdSkg5gGw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "360851693283-5151o55pa8vnebq14cvslan87ekadiof.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

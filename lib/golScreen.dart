@@ -52,9 +52,7 @@ class _GolScreenState extends State<GolScreen> {
 
   @override
   void dispose() {
-    if(globalTimer != null){
-      globalTimer.cancel();
-    }
+    globalTimer?.cancel();
     super.dispose();
   }
 

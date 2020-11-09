@@ -1,7 +1,10 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/golScreen.dart';
 import 'package:flutter_app/routeGenerator.dart';
 import 'package:flutter_app/snakeScreen.dart';
+
+import 'ad_manager.dart';
 
 void main() {
   runApp(MainScreen());
@@ -29,6 +32,31 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int snakeSpeed = 3;
   int golSpeed = 1;
+
+  Future<void> _initAdMob(){
+    return FirebaseAdMob.instance.initialize(appId:AdManager.appId);
+  }
+
+  BannerAd _bannerAd;
+
+  void _loadBannerAd(){
+    _bannerAd
+    ..load()
+        ..show(anchorType: AnchorType.bottom);
+  }
+
+  @override
+  void initState() {
+    _bannerAd = BannerAd(adUnitId: AdManager.bannerAdUnitId, size:AdSize.banner);
+    _loadBannerAd();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +159,6 @@ class _HomeState extends State<Home> {
                             style:
                                 TextStyle(color: Colors.white, fontSize: 30)),
                         onTap: () {
-                          print(golSpeed);
                           Navigator.pushNamed(context, GolScreen.routeName,
                               arguments: golSpeed);
                         },

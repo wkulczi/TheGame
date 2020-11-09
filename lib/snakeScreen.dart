@@ -63,9 +63,7 @@ class _SnakeScreenState extends State<SnakeScreen> {
 
   @override
   void dispose() {
-    if (globalTimer != null) {
-      globalTimer.cancel();
-    }
+    globalTimer?.cancel();
     super.dispose();
   }
 
@@ -189,39 +187,4 @@ class _SnakeScreenState extends State<SnakeScreen> {
     this.apple.updateApple(coordinateSpace, snake.activePoints());
   }
 
-// void golSettingUp() {
-//   var alivedots = [apple, snake]
-//       //get active points from apple and snake (lists)
-//       .map((e) => e.activePoints())
-//       //flatten lists
-//       .expand((element) => element)
-//       //to list :V
-//       .toList();
-//
-//   var aliveDotsNoDuplicates = alivedots.toSet().toList();
-//
-//   List<GolDot> aliveDots = aliveDotsNoDuplicates
-//       .map((e) => GolDot(location: e, alive: true))
-//       .toList();
-//   List<GolDot> allDots = coordinateSpace
-//       .outerJoin(aliveDotsNoDuplicates)
-//       .map((e) => GolDot(location: e, alive: false))
-//       .toList();
-//   allDots.addAll(aliveDots);
-//
-//   this.gol.setDots(allDots);
-// }
-//
-// void gameOfLifeRoutine(Timer timer) {
-//   if (this.gameOverScreenOn) {
-//     this.gol.update();
-//     setState(() {
-//       this.activePoints = this.gol.getDotsCopy().map((e) => e.dot);
-//     });
-//   } else {
-//     print('aloha');
-//     timer.cancel();
-//     this.startGameLoop();
-//   }
-// }
 }
