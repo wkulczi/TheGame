@@ -1,4 +1,4 @@
-import 'package:flutter_app/golDot.dart';
+import 'package:flutter_app/classes/game_of_life/gol_dot.dart';
 
 class GameOfLife {
   List<GolDot> dots= [];

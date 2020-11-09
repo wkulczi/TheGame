@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/point.dart';
+import 'package:flutter_app/classes/coordinate_system/point.dart';
 
-import 'coordSpace.dart';
+import '../coordinate_system/coord_space.dart';
 
 class Apple extends Point {
   Coord location;

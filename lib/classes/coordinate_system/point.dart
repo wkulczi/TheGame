@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:equatable/equatable.dart';
 
-import 'coordSpace.dart';
+import 'coord_space.dart';
 
 abstract class Point extends Equatable {
 

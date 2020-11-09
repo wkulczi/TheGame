@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'coordSpace.dart';
-import 'point.dart';
+import '../../classes/coordinate_system/coord_space.dart';
+import '../../classes/coordinate_system/point.dart';
 
 Widget conditionallyColoredRectangle(bool predicate, Color color) {
   if (predicate) {

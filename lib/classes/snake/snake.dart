@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/point.dart';
+import 'package:flutter_app/classes/coordinate_system/point.dart';
 
-import 'coordSpace.dart';
-import 'direction.dart';
+import '../../enums/direction.dart';
+import '../coordinate_system/coord_space.dart';
 
 class Snake extends Point {
   List<Coord> snakeCoords;

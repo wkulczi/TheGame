@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/snake.dart';
-import 'package:flutter_app/snakeGameWindow.dart';
+import 'package:flutter_app/classes/snake/snake.dart';
+import 'package:flutter_app/views/widgets/snake_game_window.dart';
 
-import 'apple.dart';
-import 'coordSpace.dart';
-import 'direction.dart';
-import 'point.dart';
+import '../classes/coordinate_system/coord_space.dart';
+import '../classes/coordinate_system/point.dart';
+import '../classes/snake/apple.dart';
+import '../enums/direction.dart';
 
 class SnakeScreen extends StatefulWidget {
   static const routeName = '/snakeScreen';

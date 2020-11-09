@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/golScreen.dart';
-import 'package:flutter_app/snakeScreen.dart';
+import 'package:flutter_app/views/gol_screen.dart';
+import 'package:flutter_app/views/snake_screen.dart';
 
-import 'main.dart';
+import '../../main.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {

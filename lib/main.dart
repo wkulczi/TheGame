@@ -1,10 +1,10 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/golScreen.dart';
-import 'package:flutter_app/routeGenerator.dart';
-import 'package:flutter_app/snakeScreen.dart';
+import 'package:flutter_app/classes/routing/route_generator.dart';
+import 'package:flutter_app/views/gol_screen.dart';
+import 'package:flutter_app/views/snake_screen.dart';
 
-import 'ad_manager.dart';
+import 'classes/ads/ad_manager.dart';
 
 void main() {
   runApp(MainScreen());

@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/coordSpace.dart';
-import 'package:flutter_app/gameOfLife.dart';
+import 'package:flutter_app/classes/coordinate_system/coord_space.dart';
+import 'package:flutter_app/classes/game_of_life/game_of_life.dart';
 
-import 'golDot.dart';
+import '../classes/game_of_life/gol_dot.dart';
 
 class GolScreen extends StatefulWidget {
   static const routeName = '/golScreen';
