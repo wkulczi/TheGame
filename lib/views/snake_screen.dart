@@ -164,6 +164,10 @@ class _SnakeScreenState extends State<SnakeScreen> {
                   ),
                 ],
               ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(color: Colors.black,),
             )
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/classes/routing/route_generator.dart';
 import 'package:flutter_app/views/gol_screen.dart';
 import 'package:flutter_app/views/snake_screen.dart';
@@ -32,22 +33,23 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int snakeSpeed = 3;
   int golSpeed = 1;
+  int queryno = 0;
 
-  Future<void> _initAdMob(){
-    return FirebaseAdMob.instance.initialize(appId:AdManager.appId);
+  Future<void> _initAdMob() {
+    return FirebaseAdMob.instance.initialize(appId: AdManager.appId);
   }
 
   BannerAd _bannerAd;
 
-  void _loadBannerAd(){
+  void _loadBannerAd() {
     _bannerAd
-    ..load()
-        ..show(anchorType: AnchorType.bottom);
+      ..load()
+      ..show(anchorType: AnchorType.bottom);
   }
 
   @override
   void initState() {
-    _bannerAd = BannerAd(adUnitId: AdManager.bannerAdUnitId, size:AdSize.banner);
+    _bannerAd = BannerAd(adUnitId: AdManager.bannerAdUnitId, size: AdSize.banner, targetingInfo: MobileAdTargetingInfo(nonPersonalizedAds: true));
     _loadBannerAd();
     super.initState();
   }
@@ -70,10 +72,7 @@ class _HomeState extends State<Home> {
               alignment: Alignment.bottomCenter,
               child: Text(
                 "The game of Snake",
-                style: TextStyle(
-                    color: Colors.white,
-                    decoration: TextDecoration.underline,
-                    fontSize: 30),
+                style: TextStyle(color: Colors.white, decoration: TextDecoration.underline, fontSize: 30),
                 textAlign: TextAlign.end,
               ),
             ),
@@ -113,8 +112,7 @@ class _HomeState extends State<Home> {
                           style: TextStyle(color: Colors.white, fontSize: 30),
                         ),
                         onTap: () {
-                          Navigator.pushNamed(context, SnakeScreen.routeName,
-                              arguments:snakeSpeed);
+                          Navigator.pushNamed(context, SnakeScreen.routeName, arguments: snakeSpeed);
                         },
                       ),
                       Padding(
@@ -155,12 +153,9 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                       InkWell(
-                        child: Text("Game Of L" + golSpeed.toString() + "fe",
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 30)),
+                        child: Text("Game Of L" + golSpeed.toString() + "fe", style: TextStyle(color: Colors.white, fontSize: 30)),
                         onTap: () {
-                          Navigator.pushNamed(context, GolScreen.routeName,
-                              arguments: golSpeed);
+                          Navigator.pushNamed(context, GolScreen.routeName, arguments: golSpeed);
                         },
                       ),
                       Padding(
@@ -181,9 +176,11 @@ class _HomeState extends State<Home> {
                       ),
                     ],
                   ),
-                  Container(
-                    child: Text("Exit",
-                        style: TextStyle(color: Colors.white, fontSize: 30)),
+                  InkWell(
+                    onTap: () => {SystemNavigator.pop()},
+                    child: Container(
+                      child: Text("Exit", style: TextStyle(color: Colors.white, fontSize: 30)),
+                    ),
                   ),
                 ],
               ),
@@ -193,6 +190,29 @@ class _HomeState extends State<Home> {
             flex: 7,
             child: Container(
               color: Colors.black,
+              child: Center(
+                child: Column(
+                  children: [
+                    FlatButton(
+                      onPressed: () {
+                          setState(() {
+                            if (_bannerAd != null) {
+                              _bannerAd.dispose();
+                            }
+                            _bannerAd = BannerAd(adUnitId: AdManager.bannerAdUnitId, size: AdSize.banner, targetingInfo: MobileAdTargetingInfo(nonPersonalizedAds: true));
+                            _loadBannerAd();
+                            queryno++;
+                          });
+                      },
+                      child: Text("Ad not loaded?", style: TextStyle(color: Colors.white)),
+                    ),
+                    Text(
+                      queryno > 999 ? "Done. " : "Query no: " + queryno.toString(),
+                      style: TextStyle(color: Colors.white),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
         ],
