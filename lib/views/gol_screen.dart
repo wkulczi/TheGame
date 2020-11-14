@@ -143,7 +143,7 @@ class _GolScreenState extends State<GolScreen> {
             ),
             Expanded(
               flex: 1,
-              child: Container(color: Colors.white),
+              child: Container(color: Colors.black),
             )
           ],
         ));

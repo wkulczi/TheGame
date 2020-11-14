@@ -35,11 +35,11 @@ class _HomeState extends State<Home> {
   int golSpeed = 1;
   int queryno = 0;
 
+  BannerAd _bannerAd;
+
   Future<void> _initAdMob() {
     return FirebaseAdMob.instance.initialize(appId: AdManager.appId);
   }
-
-  BannerAd _bannerAd;
 
   void _loadBannerAd() {
     _bannerAd
@@ -47,10 +47,14 @@ class _HomeState extends State<Home> {
       ..show(anchorType: AnchorType.bottom);
   }
 
-  @override
-  void initState() {
+  void setUpBannerAd() {
     _bannerAd = BannerAd(adUnitId: AdManager.bannerAdUnitId, size: AdSize.banner, targetingInfo: MobileAdTargetingInfo(nonPersonalizedAds: true));
     _loadBannerAd();
+  }
+
+  @override
+  void initState() {
+    setUpBannerAd();
     super.initState();
   }
 
@@ -190,28 +194,43 @@ class _HomeState extends State<Home> {
             flex: 7,
             child: Container(
               color: Colors.black,
-              child: Center(
-                child: Column(
-                  children: [
-                    FlatButton(
-                      onPressed: () {
-                          setState(() {
-                            if (_bannerAd != null) {
-                              _bannerAd.dispose();
+              child: FutureBuilder(
+                future: _initAdMob(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        "Error while initiating the ads",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    // return Center();
+                    return FutureBuilder(
+                        future: _bannerAd.isLoaded(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            if (!snapshot.data) {
+                              return Center(
+                                child: InkWell(
+                                    onTap: () => {
+                                          setState(() {
+                                            this._initAdMob().then((value) => {this._bannerAd?.dispose(), this.setUpBannerAd()});
+                                          })
+                                        },
+                                    child: Text(
+                                      "Reload ad",
+                                      style: TextStyle(color: Colors.white, fontSize: 18),
+                                    )),
+                              );
                             }
-                            _bannerAd = BannerAd(adUnitId: AdManager.bannerAdUnitId, size: AdSize.banner, targetingInfo: MobileAdTargetingInfo(nonPersonalizedAds: true));
-                            _loadBannerAd();
-                            queryno++;
-                          });
-                      },
-                      child: Text("Ad not loaded?", style: TextStyle(color: Colors.white)),
-                    ),
-                    Text(
-                      queryno > 999 ? "Done. " : "Query no: " + queryno.toString(),
-                      style: TextStyle(color: Colors.white),
-                    )
-                  ],
-                ),
+                          }
+                          return Container();
+                        });
+                  } else {
+                    return Center(child: CircularProgressIndicator());
+                  }
+                },
               ),
             ),
           ),
